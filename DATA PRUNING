@@ -1,0 +1,14 @@
+import pandas as pd
+from sklearn.datasets import load_iris
+data = load_iris()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df['target'] = data.target
+df = pd.concat([df, df.iloc[0:3]], ignore_index=True)
+df.loc[0, 'sepal length (cm)'] = None
+df.loc[1, 'sepal width (cm)'] = None
+print("Initial data with duplicates and missing values:")
+print(df.head(10))
+df = df.drop_duplicates()
+df = df.fillna(df.mean())
+print("\nPruned data without duplicates and missing values handled:")
+print(df.head(10))
