@@ -1,0 +1,23 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+# Sample spatial data (latitude, longitude)
+data = {
+ 'Latitude': [34.0522, 36.7783, 40.7128, 37.7749, 51.5074, 48.8566, 52.5200, 41.9028],
+ 'Longitude': [-118.2437, -119.4179, -74.0060, -122.4194, -0.1278, 2.3522, 13.4050,
+12.4964]
+}
+# Convert the data into a DataFrame
+df = pd.DataFrame(data)
+# K-Means Clustering
+kmeans = KMeans(n_clusters=3, random_state=42) # You can adjust the number of clusters
+df['Cluster'] = kmeans.fit_predict(df[['Latitude', 'Longitude']])
+# Visualize the clusters
+plt.scatter(df['Longitude'], df['Latitude'], c=df['Cluster'], cmap='viridis')
+plt.title('Spatial Data Clustering (K-Means)')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.colorbar(label='Cluster')
+plt.show()
+# Show the clustered data
+print(df)
