@@ -1,0 +1,55 @@
+import pandas as pd
+from itertools import combinations
+data = {
+ 'Milk': [1, 1, 1, 0, 1, 0, 1, 0],
+ 'Bread': [1, 0, 1, 1, 0, 1, 1, 1],
+ 'Butter': [0, 1, 0, 1, 1, 0, 1, 1],
+ 'Cheese': [1, 0, 1, 0, 1, 1, 0, 1],
+ 'Eggs': [0, 1, 0, 1, 0, 1, 1, 1]
+}
+df = pd.DataFrame(data)
+def calculate_support(itemset, df):
+ itemset_indices = [df.columns.get_loc(item) for item in itemset]
+ support = sum([1 for row in df.itertuples(index=False) if all(row[i] == 1 for i in itemset_indices)]) /
+len(df)
+ return support
+def apriori(df, min_support=0.2):
+ itemsets = []
+ for column in df.columns:
+ itemsets.append([column])
+ frequent_itemsets = []
+ while itemsets:
+ current_itemsets = []
+ for itemset in itemsets:
+ support = calculate_support(itemset, df)
+ if support >= min_support:
+ frequent_itemsets.append((itemset, support))
+ if len(itemset) < len(df.columns):
+current_itemsets.extend([list(combo) for combo in combinations(itemset, len(itemset) +
+1)])
+ itemsets = current_itemsets
+ return frequent_itemsets
+def generate_rules(frequent_itemsets, df, min_confidence=0.5):
+ rules = []
+ for itemset, support in frequent_itemsets:
+ if len(itemset) > 1: # Only generate rules from itemsets larger than size 1
+ for antecedent_size in range(1, len(itemset)):
+ antecedents = [list(combo) for combo in combinations(itemset, antecedent_size)]
+ for antecedent in antecedents:
+ consequent = list(set(itemset) - set(antecedent))
+ support_antecedent = calculate_support(antecedent, df)
+ confidence = support / support_antecedent
+ lift = confidence / support_antecedent if support_antecedent != 0 else 0
+ if confidence >= min_confidence:
+ rules.append({
+ 'antecedent': antecedent,
+ 'consequent': consequent,
+ 'support': support,
+ 'confidence': confidence,
+ 'lift': lift
+ })
+ return rules
+frequent_itemsets = apriori(df, min_support=0.2) # Lowered min_support
+print("Frequent Itemsets:\n", frequent_itemsets)
+rules = generate_rules(frequent_itemsets, df, min_confidence=0.5)
+print("\nAssociation Rules:\n", pd.DataFrame(rules))
