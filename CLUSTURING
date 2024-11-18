@@ -1,0 +1,15 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+from sklearn.metrics import classification_report
+# Load the Iris dataset
+data = load_iris()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+# Apply K-Means clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+df['cluster'] = kmeans.fit_predict(df)
+# Display the results
+print("Cluster Centers:\n", kmeans.cluster_centers_)
+print("\nClustering Results:")
+print(df.head())
